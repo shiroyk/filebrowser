@@ -1,7 +1,11 @@
 
 config global
+	option address '0.0.0.0'
 	option port '8088'
-	option root_path '/'
+	option database '/etc/filebrowser.db'
+	option username 'admin'
+	option password 'admin'
+	option root_path '/root'
 	option project_directory '/tmp'
 	option enable '0'
 

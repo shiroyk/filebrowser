@@ -4,6 +4,9 @@ msgstr "文件浏览器"
 msgid "File explorer is software that creates your own cloud that you can install on a server, point it to a path, and then access your files through a beautiful web interface. You have many features available!"
 msgstr "文件浏览器是一种创建你自己的云的软件，你可以在服务器上安装它，将它指向一个路径，然后通过一个漂亮的web界面访问你的文件。您有许多可用的特性！"
 
+msgid "Running Status"
+msgstr "运行状态"
+
 msgid "RUNNING"
 msgstr "运行中"
 
@@ -19,8 +22,20 @@ msgstr "全局设置"
 msgid "Enable"
 msgstr "启用"
 
+msgid "Listen address"
+msgstr "监听地址"
+
 msgid "Listen port"
 msgstr "监听端口"
+
+msgid "Initial username"
+msgstr "初始账户"
+
+msgid "Initial password"
+msgstr "初始密码"
+
+msgid "Database path"
+msgstr "数据库路径"
 
 msgid "Root path"
 msgstr "指向路径"
@@ -34,11 +49,20 @@ msgstr "项目存放目录"
 msgid "The file size is large, requiring at least 32M space. It is recommended to insert a usb flash drive or hard disk, or use it in the tmp directory<br />For example, /mnt/sda1<br />For example, /tmp"
 msgstr "文件较大，至少需要32M空间。建议插入U盘或硬盘，或放入tmp目录里使用<br />例如：/mnt/sda1<br />例如：/tmp"
 
+msgid "Check update"
+msgstr "检查更新"
+
+msgid "Fetching..."
+msgstr "请求中"
+
 msgid "Manually download"
 msgstr "手动下载"
 
-msgid "Make sure you have enough space. <br /><font style='color:red'>Be sure to fill out the project storage directory the first time you run it, and then save the application. Then manually download, otherwise can not use!</font>"
-msgstr "请确保具有足够的空间。<br /><font style='color:red'>第一次运行务必填好项目存放目录，然后保存应用。再手动下载，否则无法使用！</font>"
+msgid "Make sure you have enough space."
+msgstr "请确保具有足够的空间。"
+
+msgid "<br /><font style='color:red'>Be sure to fill out the project storage directory the first time you run it, and then save the application. Then manually download, otherwise can not use!</font>"
+msgstr "<br /><font style='color:red'>第一次运行务必填好项目存放目录，然后保存应用。再手动下载，否则无法使用！</font>"
 
 msgid "Logs"
 msgstr "日志"

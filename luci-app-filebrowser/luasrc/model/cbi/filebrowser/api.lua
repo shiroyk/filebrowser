@@ -80,8 +80,6 @@ local function exec(cmd, args, writer, timeout)
 end
 
 local function compare_versions(ver1, comp, ver2)
-    local table = table
-
     local av1 = util.split(ver1, "[%.%-]", nil, true)
     local av2 = util.split(ver2, "[%.%-]", nil, true)
 
@@ -180,7 +178,13 @@ local function get_api_json(url)
     return jsonc.parse(json_content) or {}
 end
 
-function get_version() return uci_get_type("global", "version", "0") end
+function get_version() 
+    local version = sys.exec("/etc/init.d/filebrowser version")
+    if (version == nil or version == "") then
+        return "0"
+    end
+    return version
+end
 
 function to_check(arch)
     if not arch or arch == "" then arch = auto_get_arch() end
@@ -335,4 +339,14 @@ function to_move(file)
     sys.call("/bin/rm -rf /tmp/filebrowser_extract.*")
 
     return {code = 0}
+end
+
+function exists()
+    local project_directory =
+          uci_get_type("global", "project_directory", "/tmp")
+    local client_path = project_directory .. "/" .. appname
+    if fs.access(client_path) then
+      return true
+    end
+    return false
 end

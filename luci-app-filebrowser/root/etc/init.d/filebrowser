@@ -15,19 +15,32 @@ config_t_get() {
 	local ret=$(uci get filebrowser.@$1[$index].$2 2>/dev/null)
 	echo ${ret:=$3}
 }
+
+extra_command "version" "Filebrowser version"
+ 
+version() {
+	project_directory=$(config_t_get global project_directory /tmp)
+  echo -n `$project_directory/filebrowser version | grep -oE 'v\\d+.\\d+.\\d+'`
+}
+
 start() {
 	ENABLED=$(config_t_get global enable 0)
 	[ "$ENABLED" = "0" ] && return
+	ADDRESS=$(config_t_get global address 0.0.0.0)
 	PORT=$(config_t_get global port 8088)
-	ROOT_PATH=$(config_t_get global root_path /)
+	DATABASE=$(config_t_get global database /etc/filebrowser.db)
+	USERNAME=$(config_t_get global username admin)
+	PASSWORD=$(config_t_get global password admin)
+	ROOT_PATH=$(config_t_get global root_path /root)
 	project_directory=$(config_t_get global project_directory /tmp)
-	[ ! -f "$project_directory/filebrowser" ] && echolog "在$project_directory找不到FileBrowser主程序，请下载。" && exit
-	export HOME="/root"
-	$project_directory/filebrowser -a 0.0.0.0 -p $PORT -r $ROOT_PATH -d ${ROOT_PATH}filebrowser.db -l $LOG_PATH >/dev/null 2>&1 &
+	[ ! -f "$project_directory/filebrowser" ] && echolog "$project_directory/filebrowser not exists, please download first" && exit
+
+  PASSWORD="$($project_directory/filebrowser hash "$PASSWORD")"
+	$project_directory/filebrowser -a $ADDRESS -p $PORT -r $ROOT_PATH -d "$DATABASE" --username $USERNAME --password $PASSWORD -l $LOG_PATH >/dev/null 2>&1 &
 }
 
 stop() {
-	busybox ps -w | grep -v "grep" | grep "$project_directory/filebrowser -a 0.0.0.0" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	busybox ps -w | grep -v "grep" | grep "$project_directory/filebrowser -a" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	rm -rf $LOG_PATH
 }
 
