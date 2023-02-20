@@ -1,5 +1,5 @@
 # filebrowser
-LuCI support for FileBrowser.
+LuCI support for [FileBrowser](https://github.com/filebrowser/filebrowser).
 
 Supported architecture: 
 - amd64
