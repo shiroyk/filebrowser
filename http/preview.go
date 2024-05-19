@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-
-	"github.com/gorilla/mux"
+	"os/exec"
 
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/img"
+	"github.com/gorilla/mux"
 )
 
 /*
@@ -63,10 +63,53 @@ func previewHandler(imgSvc ImgService, fileCache FileCache, enableThumbnails, re
 		switch file.Type {
 		case "image":
 			return handleImagePreview(w, r, imgSvc, fileCache, file, previewSize, enableThumbnails, resizePreview)
+		case "video":
+			return handleVideoPreview(w, r, fileCache, file)
 		default:
 			return http.StatusNotImplemented, fmt.Errorf("can't create preview for %s type", file.Type)
 		}
 	})
+}
+
+func handleVideoPreview(
+	w http.ResponseWriter,
+	r *http.Request,
+	fileCache FileCache,
+	file *files.FileInfo,
+) (int, error) {
+	cacheKey := previewCacheKey(file, PreviewSizeThumb)
+	thumbnail, ok, err := fileCache.Load(r.Context(), cacheKey)
+	if err != nil {
+		return errToStatus(err), err
+	}
+	if !ok {
+		thumbnail, err = exec.Command("ffmpeg",
+			"-i", file.RealPath(),
+			"-filter_complex", "[0]select=gte(n\\,10)[s0]",
+			"-map", "[s0]",
+			"-f", "image2",
+			"-vcodec", "mjpeg",
+			"-vframes", "1",
+			"pipe:").Output()
+		if err != nil {
+			return errToStatus(err), err
+		}
+
+		go func() {
+			if err := fileCache.Store(context.Background(), cacheKey, thumbnail); err != nil {
+				fmt.Printf("failed to cache thumbnail image: %v", err)
+			}
+		}()
+	}
+
+	w.Header().Set("Cache-Control", "private")
+	filename := file.Name
+	if len(filename) > 0 {
+		filename = filename[:len(filename)-len(file.Extension)]
+	}
+	http.ServeContent(w, r, filename+".jpg", file.ModTime, bytes.NewReader(thumbnail))
+
+	return 0, nil
 }
 
 func handleImagePreview(
